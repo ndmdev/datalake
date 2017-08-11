@@ -28,7 +28,7 @@ public class Context {
 		return new JdbcTemplate(dataSource());
 	}
 
-	@Bean
+	@Bean(initMethod = "analyse")
 	public com.nd.datalake.quick.QuickAnalysis quickAnalysis() {
 		return new com.nd.datalake.quick.QuickAnalysis();
 	}

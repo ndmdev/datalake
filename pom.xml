@@ -11,6 +11,7 @@
 		<module>commons</module>
 		<module>stream-sink</module>
 		<module>framework</module>
+		<module>quick-analysis</module>
 	</modules>
 
 	<dependencyManagement>
@@ -31,4 +32,15 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>

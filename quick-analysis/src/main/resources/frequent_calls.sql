@@ -1,0 +1,1 @@
+CALL CSVWRITE('/data/result/frequent_call.csv', 'select A_PARTY, B_PARTY, SUM(DURATION_SECS) AS TOTAL_CALL_DURATION, count(*) AS NO_CALLS from quick_analysis where (LOWER(B_PARTY) = UPPER(B_PARTY)) group by B_PARTY order by TOTAL_CALL_DURATION desc');
