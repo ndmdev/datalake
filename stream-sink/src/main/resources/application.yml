@@ -1,0 +1,7 @@
+streamSink:
+  fields: contributors.screen_name, created_at, favorite_count, place.country
+  fieldSeparator: ','
+  store:
+    paquet.pageSizeBytes: 1048576
+    rollingIntervalMins: 10
+    outputBaseLocation: /tmp/nd/parquet-data

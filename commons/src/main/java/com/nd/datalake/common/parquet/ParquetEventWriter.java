@@ -1,18 +1,3 @@
-/**
- * © Copyright 2015 Flytxt BV. ALL RIGHTS RESERVED.
- *
- * All rights, title and interest (including all intellectual property rights) in this software and any derivative works based upon or derived from this software
- * belongs exclusively to Flytxt BV. Access to this software is forbidden to anyone except current employees of Flytxt BV and its affiliated companies who have
- * executed non-disclosure agreements explicitly covering such access. While in the employment of Flytxt BV or its affiliate companies as the case may be,
- * employees may use this software internally, solely in the course of employment, for the sole purpose of developing new functionalities, features, procedures,
- * routines, customizations or derivative works, or for the purpose of providing maintenance or support for the software. Save as expressly permitted above,
- * no license or right thereto is hereby granted to anyone, either directly, by implication or otherwise. On the termination of employment, the license granted
- * to employee to access the software shall terminate and the software should be returned to the employer, without retaining any copies.
- *
- * This software is (i) proprietary to Flytxt BV; (ii) is of significant value to it; (iii) contains trade secrets of Flytxt BV; (iv) is not publicly available;
- * and (v) constitutes the confidential information of Flytxt BV. Any use, reproduction, modification, distribution, public performance or display of this software
- * or through the use of this software without the prior, express written consent of Flytxt BV is strictly prohibited and may be in violation of applicable laws.
- */
 package com.nd.datalake.common.parquet;
 
 import java.io.File;
@@ -49,7 +34,7 @@ import com.nd.datalake.common.utils.DateUtil;
  * @author krishnaprasad
  *
  */
-public class ParquetRecordWriter<T extends BaseAvroRecord> implements Runnable {
+public class ParquetEventWriter<T extends BaseAvroEvent> implements Runnable {
 
 	private static final int DEFAULT_BLOCK_SIZE = 128 * 1024 * 1024;
 
@@ -73,13 +58,13 @@ public class ParquetRecordWriter<T extends BaseAvroRecord> implements Runnable {
 
 	private static final int DEFAULT_ROLLING_INTERVAL = 1440;
 
-	private static final String BASE_LOCATION = "/usr/local/flytxt";
+	private static final String BASE_LOCATION = "/usr/local";
 
 	private final AtomicBoolean fileRollingStatus = new AtomicBoolean(false);
 
 	private final AtomicBoolean dataPresent = new AtomicBoolean(false);
 
-	private final Logger logger = LoggerFactory.getLogger(ParquetRecordWriter.class);
+	private final Logger logger = LoggerFactory.getLogger(ParquetEventWriter.class);
 
 	private Schema avroSchema;
 
@@ -87,14 +72,20 @@ public class ParquetRecordWriter<T extends BaseAvroRecord> implements Runnable {
 
 	private String metaLocation = BASE_LOCATION;
 
-	public ParquetRecordWriter(final int blockSize, final int pageSize, final ParquetRecordTranslator translator,
+	public ParquetEventWriter(final int pageSize, final ParquetRecordTranslator translator, final int rollingInterval,
+			final Schema avroSchema, final String outputBaseLocation) throws IOException {
+		this(DEFAULT_BLOCK_SIZE, pageSize, translator, rollingInterval, avroSchema, outputBaseLocation,
+				new Configuration(), BASE_LOCATION);
+	}
+
+	public ParquetEventWriter(final int blockSize, final int pageSize, final ParquetRecordTranslator translator,
 			final int rollingInterval, final Schema avroSchema, final String outputBaseLocation,
 			final String metaLocation) throws IOException {
 		this(blockSize, pageSize, translator, rollingInterval, avroSchema, outputBaseLocation, new Configuration(),
 				metaLocation);
 	}
 
-	public ParquetRecordWriter(final int blockSize, final int pageSize, final ParquetRecordTranslator translator,
+	public ParquetEventWriter(final int blockSize, final int pageSize, final ParquetRecordTranslator translator,
 			final int rollingInterval, final Schema avroSchema, final String parquetOutputLocation,
 			final Configuration hadoopConf, final String metaLocation) throws IOException {
 		super();
@@ -114,7 +105,7 @@ public class ParquetRecordWriter<T extends BaseAvroRecord> implements Runnable {
 		}
 	}
 
-	public ParquetRecordWriter(final Schema avroSchema, final String parquetOutputLocation,
+	public ParquetEventWriter(final Schema avroSchema, final String parquetOutputLocation,
 			final ParquetRecordTranslator translator) throws IOException {
 		this(DEFAULT_BLOCK_SIZE, DEFAULT_PAGE_SIZE, translator, DEFAULT_ROLLING_INTERVAL, avroSchema,
 				parquetOutputLocation, BASE_LOCATION);
@@ -130,14 +121,20 @@ public class ParquetRecordWriter<T extends BaseAvroRecord> implements Runnable {
 				.withWriteMode(ParquetFileWriter.Mode.CREATE).withPageSize(pageSize).build();
 	}
 
-	public synchronized void write(final T event) throws IOException {
+	public synchronized void write(String feed) throws IOException {
 		if (System.currentTimeMillis() >= nextDayStart) {
 			doDailyJobs();
 		}
 		if (fileRollingStatus.get()) {
 			rollFile();
 		}
-		final String partitionColumnValue = event.getPartitionColumnValue();
+		GenericRecord record = parquetRecordTranslator.translate(feed);
+		writeToParquet(record);
+	}
+
+	private void writeToParquet(GenericRecord record) throws IOException {
+		Object partition = record.get("partition_column");
+		String partitionColumnValue = (String) partition == null ? "" : (String) partition;
 		ParquetWriterWithPath parquetWriterWithPath = parquetWriterCache.get(partitionColumnValue);
 		if (parquetWriterWithPath == null) {
 			final String path = createParquetFilePath(partitionColumnValue);
@@ -150,7 +147,7 @@ public class ParquetRecordWriter<T extends BaseAvroRecord> implements Runnable {
 				throw e;
 			}
 		}
-		parquetWriterWithPath.getParquetWriter().write(parquetRecordTranslator.translate(event));
+		parquetWriterWithPath.getParquetWriter().write(record);
 		dataPresent.compareAndSet(false, true);
 	}
 
@@ -335,4 +332,5 @@ public class ParquetRecordWriter<T extends BaseAvroRecord> implements Runnable {
 		}
 
 	}
+
 }
