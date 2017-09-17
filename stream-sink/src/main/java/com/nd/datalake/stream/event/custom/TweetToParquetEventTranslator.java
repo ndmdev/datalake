@@ -35,10 +35,10 @@ public class TweetToParquetEventTranslator implements ParquetRecordTranslator {
 	public GenericRecord translate(String event) {
 		String[] extractedValues = JsonExtractor.extractValues(event, streamMsgFieldNames);
 		final GenericRecord record = new GenericData.Record(avroSchema);
-		record.put("screenName", extractedValues[0]);
+		record.put("userA", extractedValues[0]);
 		record.put("createdDate", extractedValues[1]);
 		record.put("favoriteCount", Integer.parseInt(extractedValues[2]));
-		record.put("countryName", extractedValues[3]);
+		record.put("userB", extractedValues[3]);
 		return record;
 	}
 

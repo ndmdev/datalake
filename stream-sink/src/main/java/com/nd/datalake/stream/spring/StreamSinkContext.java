@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,8 +22,8 @@ import com.nd.datalake.stream.event.custom.RealTimeTweet;
  *
  */
 @Configuration
+@EnableAutoConfiguration
 public class StreamSinkContext {
-
 	@Bean(initMethod = "init", destroyMethod = "destroy")
 	public com.nd.datalake.stream.event.store.StringToParquetStore eventStore() {
 		return new com.nd.datalake.stream.event.store.StringToParquetStore();
@@ -31,7 +32,7 @@ public class StreamSinkContext {
 	@Autowired
 	@Bean(initMethod = "init", destroyMethod = "destroy")
 	public com.nd.datalake.common.parquet.ParquetEventWriter<RealtimeEvent> parquetEventWriter(
-			@Value("${streamSink.store.paquet.pageSizeBytes}") int pageSize, ParquetRecordTranslator translator,
+			@Value("${streamSink.store.paquet.pageSizeBytes:1048576}") int pageSize, ParquetRecordTranslator translator,
 			@Value("${streamSink.store.paquet.rollingIntervalMins}") int rollingInterval,
 			@Value("${streamSink.store.paquet.outputBaseLocation}") String outputBaseLocation) throws IOException {
 		return new ParquetEventWriter<RealtimeEvent>(pageSize, translator, rollingInterval,

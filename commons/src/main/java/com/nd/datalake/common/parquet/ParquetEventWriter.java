@@ -75,7 +75,7 @@ public class ParquetEventWriter<T extends BaseAvroEvent> implements Runnable {
 	public ParquetEventWriter(final int pageSize, final ParquetRecordTranslator translator, final int rollingInterval,
 			final Schema avroSchema, final String outputBaseLocation) throws IOException {
 		this(DEFAULT_BLOCK_SIZE, pageSize, translator, rollingInterval, avroSchema, outputBaseLocation,
-				new Configuration(), BASE_LOCATION);
+				new Configuration(), outputBaseLocation);
 	}
 
 	public ParquetEventWriter(final int blockSize, final int pageSize, final ParquetRecordTranslator translator,
@@ -108,7 +108,7 @@ public class ParquetEventWriter<T extends BaseAvroEvent> implements Runnable {
 	public ParquetEventWriter(final Schema avroSchema, final String parquetOutputLocation,
 			final ParquetRecordTranslator translator) throws IOException {
 		this(DEFAULT_BLOCK_SIZE, DEFAULT_PAGE_SIZE, translator, DEFAULT_ROLLING_INTERVAL, avroSchema,
-				parquetOutputLocation, BASE_LOCATION);
+				parquetOutputLocation, parquetOutputLocation);
 	}
 
 	public void init() throws IOException {

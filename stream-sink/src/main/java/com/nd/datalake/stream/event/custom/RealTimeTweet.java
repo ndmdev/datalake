@@ -10,17 +10,17 @@ import com.nd.datalake.stream.event.RealtimeEvent;
  *
  */
 public class RealTimeTweet implements RealtimeEvent {
-	private String screenName;
+	private String userA;
 	private String createdDate;
 	private int favoriteCount;
-	private String countryName;
+	private String userB;
 
 	public RealTimeTweet(String screenName, String createdDate, int favorite_count, String countryName) {
 		super();
-		this.screenName = screenName;
+		this.userA = screenName;
 		this.createdDate = createdDate;
 		this.favoriteCount = favorite_count;
-		this.countryName = countryName;
+		this.userB = countryName;
 	}
 
 	@Override
@@ -28,12 +28,12 @@ public class RealTimeTweet implements RealtimeEvent {
 		return "";
 	}
 
-	public String getScreenName() {
-		return screenName;
+	public String getUserA() {
+		return userA;
 	}
 
-	public void setScreenName(String screenName) {
-		this.screenName = screenName;
+	public void setUserA(String userA) {
+		this.userA = userA;
 	}
 
 	public String getCreatedDate() {
@@ -52,12 +52,12 @@ public class RealTimeTweet implements RealtimeEvent {
 		this.favoriteCount = favoriteCount;
 	}
 
-	public String getCountryName() {
-		return countryName;
+	public String getUserB() {
+		return userB;
 	}
 
-	public void setCountryName(String countryName) {
-		this.countryName = countryName;
+	public void setUserB(String userB) {
+		this.userB = userB;
 	}
 
 }

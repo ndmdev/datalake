@@ -38,16 +38,30 @@ public class JsonExtractor {
 
 	private static String getStringValue(JsonObject jsonObject, String key) {
 		JsonObject joJsonObj = jsonObject;
+		JsonElement jsonElement;
 		if (key.contains(".")) {
 			String[] elements = key.split("\\.");
 			int count = 0;
 			do {
-				joJsonObj = joJsonObj.getAsJsonObject(elements[count]);
+				try {
+					if (joJsonObj != null) {
+						joJsonObj = joJsonObj.getAsJsonObject(elements[count]);
+					} else {
+						return "null";
+					}
+				} catch (java.lang.ClassCastException e) {
+					jsonElement = joJsonObj.get(elements[count]);
+					if (jsonElement.isJsonNull()) {
+						return "null";
+					} else {
+						return jsonElement.getAsString();
+					}
+				}
 				count++;
 			} while (count < elements.length - 1);
 			key = elements[count];
 		}
-		JsonElement jsonElement = joJsonObj.get(key);
+		jsonElement = joJsonObj.get(key);
 		return jsonElement.getAsString();
 	}
 
