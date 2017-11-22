@@ -11,7 +11,7 @@ import org.apache.avro.generic.GenericRecord;
  */
 public interface ParquetRecordTranslator {
 
-	GenericRecord translate(BaseAvroRecord event);
+	GenericRecord translate(String event);
 
 	void setAvroSchema(final Schema schema);
 

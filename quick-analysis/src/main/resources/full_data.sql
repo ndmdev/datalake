@@ -1,0 +1,1 @@
+CALL CSVWRITE('/data/result/full_data.csv', 'select * from quick_analysis');

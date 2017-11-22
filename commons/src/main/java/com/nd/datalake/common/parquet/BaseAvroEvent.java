@@ -5,7 +5,7 @@ package com.nd.datalake.common.parquet;
  * @author krishnaprasad
  *
  */
-public interface BaseAvroRecord {
+public interface BaseAvroEvent {
 
 	/**
 	 *

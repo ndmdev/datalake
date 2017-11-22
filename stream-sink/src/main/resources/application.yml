@@ -1,0 +1,8 @@
+streamSink:
+  fields: user.screen_name, created_at, favorite_count, retweeted_status.user.screen_name
+  fieldSeparator: ','
+  store:
+    paquet:
+      pageSizeBytes: 1048576
+      rollingIntervalMins: 10
+      outputBaseLocation: /tmp/nd/parquet-data

@@ -1,0 +1,1 @@
+CALL CSVWRITE('/data/result/suspect_call.csv', 'select A_PARTY, B_PARTY, Q_DATE, Q_TIME, DURATION_SECS, AREA_LOC, PDP_LOC, CALL_TYPE from quick_analysis where B_PARTY in (select MSISDN from suspect_list)');
