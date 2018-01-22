@@ -4,5 +4,9 @@ streamSink:
   store:
     paquet:
       pageSizeBytes: 1048576
-      rollingIntervalMins: 10
-      outputBaseLocation: /tmp/nd/parquet-data
+      rollingIntervalMins: 5
+      outputBaseLocation: /tmp/stream
+spring.cloud.stream:
+  default-binder: kafka
+  bindings.input.destination: twitter-stream-01
+  kafka.binder.zkNodes: localhost:2181
